@@ -1220,7 +1220,7 @@ textarea { resize: vertical; min-height: 80px; }
             </div>
             <div class="credit-limit-row">
               <label>Límite:</label>
-              <input type="number" id="credit-limit-input" placeholder="Ej: 2000000" />
+              <input type="text" id="credit-limit-input" placeholder="Ej: 2.000.000" inputmode="numeric" autocomplete="off" />
               <button id="save-limit">Guardar</button>
             </div>
           </div>
@@ -1233,7 +1233,7 @@ textarea { resize: vertical; min-height: 80px; }
           </div>
           <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
             <label style="font-size:13px;color:var(--text-muted)">Presupuesto:</label>
-            <input type="number" id="budget-input" placeholder="Ej: 3000000" style="width:150px;padding:6px 10px;border:1px solid var(--border);border-radius:8px;font-size:14px" />
+            <input type="text" id="budget-input" placeholder="Ej: 3.000.000" inputmode="numeric" autocomplete="off" style="width:150px;padding:6px 10px;border:1px solid var(--border);border-radius:8px;font-size:14px" />
             <button id="save-budget" style="padding:6px 14px;border:1px solid var(--primary);background:none;color:var(--primary);border-radius:8px;font-size:13px;cursor:pointer;font-weight:600">Guardar</button>
           </div>
         </div>
@@ -1736,7 +1736,7 @@ const APP = {
 
   // ─── FILTRAR POR MES ─────────────────────────────
   getMonthTx(month) {
-    const m = month || this.data.currentMonth;
+    const m = month || new Date().toISOString().slice(0,7);
     return this.data.transactions.filter(t => t.date.startsWith(m));
   },
 
@@ -1925,7 +1925,8 @@ const APP = {
 
     // Credit limit save
     document.getElementById('save-limit').addEventListener('click', () => {
-      const val = parseFloat(document.getElementById('credit-limit-input').value);
+      const raw = document.getElementById('credit-limit-input').value.replace(/\./g, '').replace(',', '.');
+      const val = parseFloat(raw);
       if (!isNaN(val) && val > 0) {
         this.data.creditLimit = val;
         this.save();
@@ -1938,7 +1939,8 @@ const APP = {
     const budgetSave = document.getElementById('save-budget');
     if (budgetSave) {
       budgetSave.addEventListener('click', () => {
-        const val = parseFloat(document.getElementById('budget-input').value);
+        const raw = document.getElementById('budget-input').value.replace(/\./g, '').replace(',', '.');
+        const val = parseFloat(raw);
         if (!isNaN(val) && val > 0) {
           this.data.budget = val;
           this.save();
@@ -1981,9 +1983,9 @@ const APP = {
 
     // Credit limit display
     const cli = document.getElementById('credit-limit-input');
-    if (cli) cli.value = this.data.creditLimit;
+    if (cli) cli.value = this.data.creditLimit.toLocaleString('es-CO');
     const bi = document.getElementById('budget-input');
-    if (bi) bi.value = this.data.budget;
+    if (bi) bi.value = this.data.budget.toLocaleString('es-CO');
   },
 
   renderCatButtons() {
