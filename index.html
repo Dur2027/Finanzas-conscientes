@@ -2435,7 +2435,7 @@ const APP = {
   },
 
   getCatColor(cat) {
-    const colors = ['#2D6A4F','#3B82F6','#F4A261','#E63946','#8B5CF6','#EC4899','#14B8A6','#F59E0B'];
+    const colors = ['#2D6A4F','#3B82F6','#F4A261','#E63946','#8B5CF6','#EC4899','#B08968','#F59E0B'];
     let hash = 0;
     for (let i = 0; i < cat.length; i++) hash = cat.charCodeAt(i) + ((hash << 5) - hash);
     return colors[Math.abs(hash) % colors.length];
