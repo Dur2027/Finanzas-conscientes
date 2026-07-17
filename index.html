@@ -1,4 +1,5 @@
 
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -1861,7 +1862,7 @@ const APP = {
     ctx.style.display = 'block';
     if (emptyMsg) emptyMsg.style.display = 'none';
 
-    const colors = ['#2D6A4F','#52B788','#40916C','#74C69D','#95D5B2','#B7E4C7','#D8F3DC','#F4A261','#E76F51','#E63946'];
+    const colors = ['#2D6A4F','#7A9E7E','#B08968','#D4A373','#5C8374','#9C6644','#E9C46A','#8A9B6E'];
     window._catChart = new Chart(ctx, {
       type: 'doughnut',
       data: {
@@ -2240,7 +2241,7 @@ const APP = {
     const sorted = Object.entries(byCat).sort((a, b) => b[1] - a[1]);
 
     const container = document.getElementById('report-cat-bars');
-    const colors = ['#2D6A4F','#52B788','#40916C','#74C69D','#F4A261','#E76F51','#E63946','#3B82F6'];
+    const colors = ['#2D6A4F','#7A9E7E','#B08968','#D4A373','#5C8374','#9C6644','#E9C46A','#8A9B6E'];
     if (!sorted.length) {
       container.innerHTML = '<p style="color:var(--text-muted);font-size:14px">Sin gastos este mes</p>';
       return;
