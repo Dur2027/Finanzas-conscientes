@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -1843,10 +1844,22 @@ const APP = {
     if (!ctx) return;
 
     if (window._catChart) window._catChart.destroy();
+    const emptyMsg = ctx.parentElement.querySelector('.chart-empty-msg');
     if (!labels.length) {
-      ctx.parentElement.innerHTML = '<div class="empty-state" style="height:200px;display:flex;align-items:center;justify-content:center;">Sin gastos registrados este mes</div>';
+      ctx.style.display = 'none';
+      if (emptyMsg) {
+        emptyMsg.style.display = 'flex';
+      } else {
+        const div = document.createElement('div');
+        div.className = 'chart-empty-msg empty-state';
+        div.style.cssText = 'height:200px;display:flex;align-items:center;justify-content:center;';
+        div.textContent = 'Sin gastos registrados este mes';
+        ctx.parentElement.appendChild(div);
+      }
       return;
     }
+    ctx.style.display = 'block';
+    if (emptyMsg) emptyMsg.style.display = 'none';
 
     const colors = ['#2D6A4F','#52B788','#40916C','#74C69D','#95D5B2','#B7E4C7','#D8F3DC','#F4A261','#E76F51','#E63946'];
     window._catChart = new Chart(ctx, {
@@ -2072,9 +2085,11 @@ const APP = {
   openQuiz(tx) {
     this._pendingTx = tx;
     this._quizAnswers = {};
+    this._quizAwaitingConfirm = false;
     document.querySelectorAll('.quiz-option').forEach(o => o.classList.remove('selected'));
     document.getElementById('impulse-result').style.display = 'none';
     document.getElementById('quiz-submit').style.display = 'block';
+    document.getElementById('quiz-submit').innerHTML = 'Registrar movimiento';
     document.getElementById('quiz-modal').classList.add('show');
     document.getElementById('quiz-tx-amount').textContent = this.fmt(tx.amount);
     document.getElementById('quiz-tx-desc').textContent = tx.description || tx.category;
@@ -2084,9 +2099,20 @@ const APP = {
     document.getElementById('quiz-modal').classList.remove('show');
     this._pendingTx = null;
     this._quizAnswers = {};
+    this._quizAwaitingConfirm = false;
   },
 
   submitQuiz() {
+    // Paso 2: ya se mostró el resultado, este clic confirma el registro
+    if (this._quizAwaitingConfirm) {
+      this.commitTx(this._pendingTx);
+      document.getElementById('quiz-modal').classList.remove('show');
+      document.getElementById('quiz-submit').innerHTML = 'Registrar movimiento';
+      this._quizAwaitingConfirm = false;
+      return;
+    }
+
+    // Paso 1: validar respuestas y mostrar el resultado
     const qs = ['q1','q2','q3','q4'];
     let allAnswered = true;
     qs.forEach(q => {
@@ -2122,12 +2148,7 @@ const APP = {
     };
 
     document.getElementById('quiz-submit').innerHTML = 'Registrar de todas formas →';
-    document.getElementById('quiz-submit').onclick = () => {
-      this.commitTx(this._pendingTx);
-      document.getElementById('quiz-modal').classList.remove('show');
-      document.getElementById('quiz-submit').innerHTML = 'Registrar movimiento';
-      document.getElementById('quiz-submit').onclick = () => this.submitQuiz();
-    };
+    this._quizAwaitingConfirm = true;
   },
 
   // ─── CATEGORÍAS ──────────────────────────────────
